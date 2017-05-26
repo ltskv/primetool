@@ -6,7 +6,7 @@ NAME = fact
 
 all: $(NAME)
 
-main.o: main.c
+main.o: main.c dyn_array.h
 	$(CC) $(CFLAGS) main.c
 
 $(NAME): $(OBJS)
