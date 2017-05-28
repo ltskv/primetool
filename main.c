@@ -1,69 +1,78 @@
 #include <stdio.h>
+#include <string.h>
 #include "dyn_array.h"
 
 DYN_ARRAY primes_up_to(NUMBER);
 DYN_ARRAY factorization(NUMBER);
 
-int main(int argc, const char** argv) {
-    DYN_ARRAY factors = factorization(17717717717717717718UL);
-    for (NUMBER i = 0; i < len(factors); i += 2)
-        printf("%llu ^ %llu\n", at(factors, i), at(factors, i + 1));
-    printf("%llu, %llu\n", len(factors), mem(factors));
+NUMBER parse(const char*);
+void print_solution(DYN_ARRAY, char);
 
+int main(int argc, const char** argv) {
+
+    if (argc < 3) {
+        printf("Usage: prime -pf number\n");
+        return 0;
+    }
+    NUMBER number;
+    DYN_ARRAY solution;
+    switch (argv[1][1]) {
+        case 'p':
+            number = parse(argv[2]);
+            if (number == 0) {
+                fprintf(stderr, "number should be integer btw 2 and 2^64 - 1\n");
+                return 1;
+            }
+            solution = primes_up_to(number);
+            print_solution(solution, 'p');
+            break;
+        case 'f':
+            number = parse(argv[2]);
+            if (number == 0) {
+                fprintf(stderr, "number should be integer btw 2 and 2^64 - 1\n");
+                return 1;
+            }
+            solution = factorization(number);
+            print_solution(solution, 'f');
+            break;
+        default:
+            fprintf(stderr, "unrecognized option %s\n", argv[1]);
+            return 1;
+            break;
+    }
     return 0;
 }
 
-DYN_ARRAY primes_up_to(NUMBER top) {
-    DYN_ARRAY primes = array_init();
-    if (top < 2) {
-        return primes;
-    }
-    primes = append(primes, 2);
+NUMBER parse(const char* numstr) {
+    const char* ref;
+    if (sizeof(NUMBER) == 8) ref = "18446744073709551615";
+    else ref = "4294967295";
 
-    for (NUMBER maybe_prime = 3; maybe_prime <= top; maybe_prime += 2) {
-        int is_prime = 1;
-        for (NUMBER i = 0; maybe_prime / at(primes, i) >= at(primes, i); i++) {
-            if (maybe_prime % at(primes, i) == 0) {
-                is_prime = 0;
-                break;
-            }
-        }
-        if (is_prime) primes = append(primes, maybe_prime);
-        if (maybe_prime % 6 == 1) maybe_prime += 2;
+    //simultaneously check validity and convert to NUMBER
+    NUMBER value = 0;
+    if (strlen(numstr) > strlen(ref)) return 0;
+    for (int i = 0; i < strlen(numstr); i++) {
+        if (numstr[i] < 48) return 0;
+        if (strlen(numstr) == strlen(ref) && numstr[i] > ref[i]) return 0;
+        NUMBER digit = numstr[i] - 48;
+        value *= 10;
+        value += digit;
     }
-    return primes;
+    return value;
 }
 
-DYN_ARRAY factorization(NUMBER number) {
-    DYN_ARRAY factors = array_init();
-
-    NUMBER exp = 0;
-    while (number % 2 == 0) {
-        number /= 2;
-        exp++;
-    }
-
-    if (exp) {
-        append(factors, 2);
-        append(factors, exp);
-    }
-
-    for (NUMBER maybe_div = 3; number / maybe_div >= maybe_div; maybe_div += 2) {
-        exp = 0;
-        while (number % maybe_div == 0) {
-            number /= maybe_div;
-            exp++;
+void print_solution(DYN_ARRAY solution, char type) {
+    if (type == 'p') {
+        for (NUMBER i = 0; i < len(solution); i++) {
+            if (i % 5 == 0) printf("\n");
+            printf("%10llu", at(solution, i));
         }
-
-        if (exp) {
-            append(factors, maybe_div);
-            append(factors, exp);
+        printf("\n");
+    }
+    else if (type == 'f') {
+        for (NUMBER i = 0; i < len(solution); i+=2) {
+            printf("%llu ^ %llu\n", at(solution, i), at(solution, i + 1));
         }
     }
-
-    if (number != 1) {
-        append(factors, number);
-        append(factors, 1);
-    }
-    return factors;
+    else printf("Not a valid solution type\n");
 }
