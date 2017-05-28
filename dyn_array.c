@@ -15,7 +15,7 @@ DYN_ARRAY append(DYN_ARRAY arr, NUMBER el) {
     count += 1;
     if (count > memory) {
         memory = memory > 0 ? memory * 2 : 1;
-        arr = realloc(arr, (memory + 2) * sizeof(NUMBER));
+        arr = realloc(arr, (memory + HEADER_LEN) * sizeof(NUMBER));
         arr[MEM_LOC] = memory;
     }
     set_at(arr, count - 1, el);
