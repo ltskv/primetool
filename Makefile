@@ -2,6 +2,8 @@ CC = clang
 CFLAGS = -c -g -std=c99
 OBJS = main.o functions.o dyn_array.o
 
+PREFIX = /Users/pavellutskov
+
 NAME = prime
 
 all: $(NAME)
@@ -20,3 +22,9 @@ $(NAME): $(OBJS)
 
 clean:
 	rm *.o $(NAME)
+
+install:
+	cp $(NAME) $(PREFIX)/bin/$(NAME)
+
+uninstall:
+	rm $(PREFIX)/bin/$(NAME)
