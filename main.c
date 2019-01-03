@@ -30,7 +30,7 @@ int main(int argc, const char** argv) {
 
     NUMBER number = num_from_string(argv[2]);
     if (number < 2) {
-        fprintf(stderr, "number should be integer between 2 and 2**64 - 1\n");
+        fprintf(stderr, "number should be integer between 2 and 2**%lu - 1\n", sizeof(NUMBER) * 8);
         return 1;
     }
     DYN_ARRAY solution = (*solution_func)(number);

@@ -1,21 +1,17 @@
 CC = clang
-CFLAGS = -c -g -std=c99
+CFLAGS = -g -std=c99
 OBJS = main.o functions.o dyn_array.o
 
-PREFIX = /Users/pavellutskov
+PREFIX = /Users/pavellutskov/.usr/
 
 NAME = prime
 
 all: $(NAME)
 
-main.o: main.c dyn_array.h
-	$(CC) $(CFLAGS) main.c
+$(OBJS): dyn_array.h
 
-functions.o: functions.c dyn_array.h
-	$(CC) $(CFLAGS) functions.c
-
-dyn_array.o: dyn_array.c dyn_array.h
-	$(CC) $(CFLAGS) dyn_array.c
+.c.o:
+	$(CC) $(CFLAGS) -c $<
 
 $(NAME): $(OBJS)
 	$(CC) $(OBJS) -o $(NAME)
