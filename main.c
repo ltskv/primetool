@@ -15,8 +15,7 @@ void print_usage(const char* name) {
             name);
 }
 
-
-int main(int argc, const char** argv) {
+int main(int argc, char* const argv[]) {
 
     int sol_type = -1;
     int opt;

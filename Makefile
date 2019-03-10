@@ -1,9 +1,9 @@
-CFLAGS = -g -std=c99
+CFLAGS = -std=c99 -O3
 OBJS = main.o functions.o dyn_array.o
 
 PREFIX = $(HOME)/.usr/
 
-NAME = prime
+NAME = primetool
 
 all: $(NAME)
 
