@@ -35,7 +35,8 @@ DYN_ARRAY factorization(NUMBER number) {
         factors = append(factors, exp);
     }
 
-    for (NUMBER maybe_div = 3; number / maybe_div >= maybe_div; maybe_div += 2) {
+    for (NUMBER maybe_div = 3; number / maybe_div >= maybe_div; maybe_div += 2)
+    {
         exp = 0;
         while (number % maybe_div == 0) {
             number /= maybe_div;

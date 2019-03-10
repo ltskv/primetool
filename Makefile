@@ -1,8 +1,7 @@
-CC = clang
 CFLAGS = -g -std=c99
 OBJS = main.o functions.o dyn_array.o
 
-PREFIX = /Users/pavellutskov/.usr/
+PREFIX = $(HOME)/.usr/
 
 NAME = prime
 

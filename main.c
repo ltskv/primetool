@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "dyn_array.h"
 
 DYN_ARRAY primes_up_to(NUMBER);
@@ -8,33 +9,61 @@ DYN_ARRAY factorization(NUMBER);
 NUMBER num_from_string(const char*);
 void print_solution(DYN_ARRAY, char);
 
+void print_usage(const char* name) {
+    fprintf(stderr,
+            "Usage: %s (-p | -f) NUMBER\n",
+            name);
+}
+
+
 int main(int argc, const char** argv) {
 
-    if (argc < 3) {
-        printf("Usage: prime -pf number\n");
-        return 0;
-    }
-    DYN_ARRAY (*solution_func)(NUMBER);
+    int sol_type = -1;
+    int opt;
 
-    switch (argv[1][1]) {
-        case 'p':
-            solution_func = &primes_up_to;
-            break;
-        case 'f':
-            solution_func = &factorization;
-            break;
-        default:
-            fprintf(stderr, "unrecognized option %s\n", argv[1]);
-            return 1;
+    while ((opt = getopt(argc, argv, "pf")) != -1) {
+        switch (opt) {
+            case 'p':
+            case 'f':
+                if (sol_type == -1) {
+                    sol_type = opt;
+                    break;
+                }
+            default:
+                print_usage(argv[0]);
+                return 1;
+        }
     }
 
-    NUMBER number = num_from_string(argv[2]);
-    if (number < 2) {
-        fprintf(stderr, "number should be integer between 2 and 2**%lu - 1\n", sizeof(NUMBER) * 8);
+    if (optind >= argc) {
+        print_usage(argv[0]);
         return 1;
     }
+
+    DYN_ARRAY (*solution_func)(NUMBER) = NULL;
+
+    if (sol_type == 'p') {
+        solution_func = &primes_up_to;
+    }
+    else if (sol_type == 'f') {
+        solution_func = &factorization;
+    }
+    else {
+        print_usage(argv[0]);
+        return 1;
+    }
+
+    NUMBER number = num_from_string(argv[optind]);
+    if (number < 2) {
+        fprintf(stderr,
+                "NUMBER should be a base-10 integer "
+                "between 2 and 2**%lu - 1\n",
+                sizeof(NUMBER) * 8);
+        return 1;
+    }
+
     DYN_ARRAY solution = (*solution_func)(number);
-    print_solution(solution, argv[1][1]);
+    print_solution(solution, sol_type);
     free(solution);
     return 0;
 }
@@ -47,10 +76,10 @@ NUMBER num_from_string(const char* numstr) {
     //simultaneously check validity and convert to NUMBER
     if (strlen(numstr) > strlen(ref)) return 0;
     NUMBER value = 0;
-    for (int i = 0; i < strlen(numstr); i++) {
-        if (numstr[i] < 48) return 0;
+    for (size_t i = 0; i < strlen(numstr); i++) {
+        if (numstr[i] < '0' || numstr[i] > '9') return 0;
         if (strlen(numstr) == strlen(ref) && numstr[i] > ref[i]) return 0;
-        NUMBER digit = numstr[i] - 48;
+        NUMBER digit = numstr[i] - '0';
         value *= 10;
         value += digit;
     }
