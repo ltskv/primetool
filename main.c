@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <getopt.h>
 #include "dyn_array.h"
 
 DYN_ARRAY primes_up_to(NUMBER);
